@@ -21,7 +21,7 @@ get_positions <- function(char, square) {
 # Enkripsi Bifid Cipher
 bifid_encrypt <- function(plaintext) {
   square <- generate_polybius_square()
-  plaintext <- toupper(gsub("J", "I", plaintext))  # Ganti J dengan I
+  plaintext <- toupper(gsub("J", "I", plaintext))
   plaintext <- gsub("[^A-Z]", "", plaintext)
 
   rows <- c()
@@ -49,7 +49,7 @@ bifid_encrypt <- function(plaintext) {
 # Dekripsi Bifid Cipher
 bifid_decrypt <- function(ciphertext) {
   square <- generate_polybius_square()
-  ciphertext <- toupper(gsub("J", "I", ciphertext))  # Ganti J dengan I
+  ciphertext <- toupper(gsub("J", "I", ciphertext))
   ciphertext <- gsub("[^A-Z]", "", ciphertext)
 
   coords <- c()
@@ -70,14 +70,46 @@ bifid_decrypt <- function(ciphertext) {
   return(decrypted)
 }
 
+# Attack Bifid Cipher (placeholder)
+bifid_attack <- function(ciphertext) {
+  cat("Fungsi attack otomatis untuk Bifid Cipher belum tersedia.\n")
+  cat("Karena Bifid Cipher adalah kombinasi substitusi dan transposisi,\n")
+  cat("maka kriptanalisis manual/statistik diperlukan untuk membongkar pesan.\n")
+  cat("Ciphertext yang dimasukkan: ", ciphertext, "\n")
+}
+
 # ============================
-# ==== CONTOH PENGGUNAAN =====
+# ========= MENU UTAMA ======
 # ============================
 
-plaintext <- "HELLO"
-encrypted <- bifid_encrypt(plaintext)
-decrypted <- bifid_decrypt(encrypted)
+repeat {
+cat("\n====== MENU BIFID CIPHER ======\n",
+    "1. Enkripsi\n",
+    "2. Dekripsi\n",
+    "3. Attack\n",
+    "4. Keluar\n", sep = "")
 
-cat("Plaintext   :", plaintext, "\n")
-cat("Encrypted   :", encrypted, "\n")
-cat("Decrypted   :", decrypted, "\n")
+  pilihan <- as.integer(readline(prompt = "Pilih opsi (1-4): "))
+
+  if (pilihan == 1) {
+    plaintext <- toupper(readline(prompt = "Masukkan plaintext: "))
+    hasil <- bifid_encrypt(plaintext)
+    cat("Hasil Enkripsi:", hasil, "\n")
+
+  } else if (pilihan == 2) {
+    ciphertext <- toupper(readline(prompt = "Masukkan ciphertext: "))
+    hasil <- bifid_decrypt(ciphertext)
+    cat("Hasil Dekripsi:", hasil, "\n")
+
+  } else if (pilihan == 3) {
+    ciphertext <- toupper(readline(prompt = "Masukkan ciphertext untuk attack: "))
+    bifid_attack(ciphertext)
+
+  } else if (pilihan == 4) {
+    cat("Program selesai.\n")
+    break
+
+  } else {
+    cat("Pilihan tidak valid. Silakan pilih angka 1-4.\n")
+  }
+}

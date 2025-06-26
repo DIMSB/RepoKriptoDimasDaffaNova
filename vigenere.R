@@ -1,5 +1,5 @@
 # ============================
-# ==== FUNGSI PEMBANTU =======
+# ==== FUNGSI PEMBANTU ======
 # ============================
 
 char_to_num <- function(chars) {
@@ -20,13 +20,11 @@ repeat_key <- function(key, length_needed) {
 
 # ============================
 # ====== FUNGSI ENKRIPSI =====
+# ============================
+
 vigenere_encrypt <- function(plaintext, key) {
   plaintext_clean <- casefold(gsub("[^A-Za-z]", "", plaintext), upper = TRUE)
   key_clean <- casefold(gsub("[^A-Za-z]", "", key), upper = TRUE)
-
-  if (!grepl("[A-Z]", plaintext_clean) || !grepl("[A-Z]", key_clean)) {
-    stop("Plaintext dan key tidak boleh kosong dan harus mengandung huruf A-Z.")
-  }
 
   pt_chars <- strsplit(plaintext_clean, "")[[1]]
   key_chars <- repeat_key(key_clean, length(pt_chars))
@@ -42,13 +40,11 @@ vigenere_encrypt <- function(plaintext, key) {
 
 # ============================
 # ====== FUNGSI DEKRIPSI =====
+# ============================
+
 vigenere_decrypt <- function(ciphertext, key) {
   ciphertext_clean <- casefold(gsub("[^A-Za-z]", "", ciphertext), upper = TRUE)
   key_clean <- casefold(gsub("[^A-Za-z]", "", key), upper = TRUE)
-
-  if (!grepl("[A-Z]", ciphertext_clean) || !grepl("[A-Z]", key_clean)) {
-    stop("Ciphertext dan key tidak boleh kosong dan harus mengandung huruf A-Z.")
-  }
 
   ct_chars <- strsplit(ciphertext_clean, "")[[1]]
   key_chars <- repeat_key(key_clean, length(ct_chars))
@@ -63,18 +59,49 @@ vigenere_decrypt <- function(ciphertext, key) {
 }
 
 # ============================
-# ===== PROGRAM UTAMA ========
+# ======== FUNGSI ATTACK =====
 # ============================
 
-# Tanpa input user
-plaintext <- "HELLO"
-key <- "WORLD"
+vigenere_attack <- function(ciphertext) {
+  cat("Attack pada Vigenère cipher memerlukan teknik kriptanalisis seperti Kasiski atau Friedman.\n")
+  cat("Fitur attack belum tersedia otomatis di versi ini.\n")
+  cat("Ciphertext yang ingin dianalisis: ", ciphertext, "\n")
+}
 
-cat("Plaintext: ", plaintext, "\n")
-cat("Key      : ", key, "\n")
+# ============================
+# ======== PROGRAM UTAMA =====
+# ============================
 
-ciphertext <- vigenere_encrypt(plaintext, key)
-cat("Hasil Enkripsi : ", ciphertext, "\n")
+repeat {
+cat("\n====== MENU VIGENÈRE CIPHER ======\n",
+    "1. Enkripsi\n",
+    "2. Dekripsi\n",
+    "3. Attack\n",
+    "4. Keluar\n", sep = "")
 
-decrypted <- vigenere_decrypt(ciphertext, key)
-cat("Hasil Dekripsi : ", decrypted, "\n")
+  pilihan <- menu(c("Enkripsi", "Dekripsi", "Attack", "Keluar"), title = "Pilih operasi:")
+
+  if (pilihan == 1) {
+    plaintext <- readline(prompt = "Masukkan plaintext: ")
+    key <- readline(prompt = "Masukkan key: ")
+    hasil <- vigenere_encrypt(plaintext, key)
+    cat("Hasil Enkripsi: ", hasil, "\n")
+
+  } else if (pilihan == 2) {
+    ciphertext <- readline(prompt = "Masukkan ciphertext: ")
+    key <- readline(prompt = "Masukkan key: ")
+    hasil <- vigenere_decrypt(ciphertext, key)
+    cat("Hasil Dekripsi: ", hasil, "\n")
+
+  } else if (pilihan == 3) {
+    ciphertext <- readline(prompt = "Masukkan ciphertext yang akan dianalisis: ")
+    vigenere_attack(ciphertext)
+
+  } else if (pilihan == 4) {
+    cat("Program selesai.\n")
+    break
+
+  } else {
+    cat("Pilihan tidak valid. Coba lagi.\n")
+  }
+}
