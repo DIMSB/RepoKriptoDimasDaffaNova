@@ -4,11 +4,13 @@
 
 # Buat Polybius Square 5x5 tanpa huruf J (I dan J digabung)
 generate_polybius_square <- function() {
-  huruf <- c("A", "B", "C", "D", "E",
-             "F", "G", "H", "I", "K",
-             "L", "M", "N", "O", "P",
-             "Q", "R", "S", "T", "U",
-             "V", "W", "X", "Y", "Z")
+  huruf <- c(
+    "A", "B", "C", "D", "E",
+    "F", "G", "H", "I", "K",
+    "L", "M", "N", "O", "P",
+    "Q", "R", "S", "T", "U",
+    "V", "W", "X", "Y", "Z"
+  )
   matrix(huruf, nrow = 5, byrow = TRUE)
 }
 
@@ -83,11 +85,13 @@ bifid_attack <- function(ciphertext) {
 # ============================
 
 repeat {
-cat("\n====== MENU BIFID CIPHER ======\n",
+  cat("\n====== MENU BIFID CIPHER ======\n",
     "1. Enkripsi\n",
     "2. Dekripsi\n",
     "3. Attack\n",
-    "4. Keluar\n", sep = "")
+    "4. Keluar\n",
+    sep = ""
+  )
 
   pilihan <- as.integer(readline(prompt = "Pilih opsi (1-4): "))
 
@@ -95,20 +99,16 @@ cat("\n====== MENU BIFID CIPHER ======\n",
     plaintext <- toupper(readline(prompt = "Masukkan plaintext: "))
     hasil <- bifid_encrypt(plaintext)
     cat("Hasil Enkripsi:", hasil, "\n")
-
   } else if (pilihan == 2) {
     ciphertext <- toupper(readline(prompt = "Masukkan ciphertext: "))
     hasil <- bifid_decrypt(ciphertext)
     cat("Hasil Dekripsi:", hasil, "\n")
-
   } else if (pilihan == 3) {
     ciphertext <- toupper(readline(prompt = "Masukkan ciphertext untuk attack: "))
     bifid_attack(ciphertext)
-
   } else if (pilihan == 4) {
     cat("Program selesai.\n")
     break
-
   } else {
     cat("Pilihan tidak valid. Silakan pilih angka 1-4.\n")
   }
