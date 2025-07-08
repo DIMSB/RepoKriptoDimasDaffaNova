@@ -1,0 +1,117 @@
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:06
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:20
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:25
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:26
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:27
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:28
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:30
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:31
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:32
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:33
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:34
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:35
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:36
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:37
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:38
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:39
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:40
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-06 15:41
+  Status: 200
+  Content-Type: application/json
+  Size: 339 B
+
+Linking to: OpenSSL 3.5.0 8 Apr 2025
+Response [https://api.telegram.org/bot7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI/sendMessage]
+  Date: 2025-07-08 16:06
+  Status: 200
+  Content-Type: application/json
+  Size: 333 B
+
+⏹ Tekan [Enter] untuk keluar...
+[1] ""
