@@ -3,32 +3,33 @@ library(httr)
 library(openssl)
 library(base64enc)
 library(digest)
+library(jsonlite)
 
 # === KONFIGURASI ===
-mode <- "auto" # bisa: "enkripsi", "dekripsi", atau "auto"
+mode <- "auto"  # bisa: "enkripsi", "dekripsi", atau "auto"
 
-file_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/dummy.txt"
-enc_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_encrypted.txt"
-hash_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_hash.txt"
-log_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/log.txt"
-restore_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/recovered_dummy.txt"
+file_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/dummy.json"
+enc_path      <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_encrypted.txt"
+hash_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_hash.txt"
+log_path      <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/log.txt"
+restore_path  <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/recovered_dummy.json"
 
 telegram_token <- "7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI"
-chat_id <- "1192588526"
+chat_id <- "-4973331538"
 timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
 
 # === KUNCI AES (HARUS 16 BYTE) ===
 kunci_aes <- charToRaw("1234567890ABCDEF")
 
-# === Fungsi Telegram ===
+# === FUNGSI TELEGRAM ===
 kirim_telegram <- function(pesan) {
   url <- paste0("https://api.telegram.org/bot", telegram_token, "/sendMessage")
-  POST(url, body = list(chat_id = chat_id, text = pesan))
+  POST(url, body = list(chat_id = chat_id, text = pesan, parse_mode = "Markdown"))
 }
 
-# === Fungsi Enkripsi dan Dekripsi AES-GCM ===
+# === ENKRIPSI / DEKRIPSI AES-GCM ===
 encrypt_file <- function(teks, key_raw) {
-  iv <- rand_bytes(12)
+  iv <- rand_bytes(12)  # IV acak
   cipher <- aes_gcm_encrypt(charToRaw(teks), key = key_raw, iv = iv)
   c(iv, cipher)
 }
@@ -42,71 +43,84 @@ decrypt_file <- function(full_raw, key_raw) {
 
 # === MODE OTOMATIS ===
 if (mode == "auto") {
-  mode <- if (!file.exists(restore_path)) "dekripsi" else "enkripsi"
+  if (!file.exists(file_path)) stop("❌ File JSON tidak ditemukan.")
+
+  isi_file <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+  hash_sekarang <- digest(isi_file, algo = "sha256")
+
+  if (!file.exists(hash_path)) {
+    mode <- "enkripsi"
+  } else {
+    hash_lama <- readLines(hash_path, warn = FALSE)
+    mode <- if (!identical(hash_sekarang, hash_lama)) "enkripsi" else "dekripsi"
+  }
+
   message("🔁 Mode otomatis memilih: ", toupper(mode))
 }
 
 # === MODE ENKRIPSI ===
 if (mode == "enkripsi") {
-  tryCatch(
-    {
-      if (!file.exists(file_path)) stop("❌ File dummy.txt tidak ditemukan.")
+  tryCatch({
+    if (!file.exists(file_path)) stop("❌ File JSON tidak ditemukan.")
 
-      isi_file <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-      isi_hash <- digest(isi_file, algo = "sha256")
+    isi_file <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
+    jsonlite::fromJSON(isi_file)  # Validasi awal JSON
+    isi_hash <- digest(isi_file, algo = "sha256")
 
-      perubahan_terjadi <- TRUE
-      if (file.exists(hash_path)) {
-        hash_lama <- readLines(hash_path, warn = FALSE)
-        if (identical(isi_hash, hash_lama)) perubahan_terjadi <- FALSE
-      }
-
-      if (perubahan_terjadi) {
-        isi_encrypted_raw <- encrypt_file(isi_file, kunci_aes)
-        isi_encrypted_b64 <- base64_encode(isi_encrypted_raw)
-
-        writeLines(isi_hash, hash_path) # simpan hash
-        writeLines(isi_encrypted_b64, enc_path, useBytes = TRUE)
-
-        isi_decrypted_raw <- decrypt_file(base64_decode(isi_encrypted_b64), kunci_aes)
-        isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
-        writeLines(isi_asli, restore_path, useBytes = TRUE)
-
-        write(paste(timestamp, "- PERUBAHAN TERDETEKSI & DIPULIHKAN"), file = log_path, append = TRUE)
-        kirim_telegram(paste0("⚠️ PERINGATAN\nFile berubah dan dipulihkan ke: ", basename(restore_path), " [", timestamp, "]"))
-        message("✅ Perubahan terdeteksi dan dipulihkan.")
-      } else {
-        write(paste(timestamp, "- Tidak ada perubahan"), file = log_path, append = TRUE)
-        kirim_telegram(paste0("✅ Tidak ada perubahan pada: ", timestamp))
-        message("🔄 Tidak ada perubahan pada isi file.")
-      }
-    },
-    error = function(e) {
-      message("❌ ERROR (Enkripsi): ", e$message)
+    # Log hash lama jika ada
+    if (file.exists(hash_path)) {
+      hash_lama <- readLines(hash_path, warn = FALSE)
+      write(paste(timestamp, "- HASH lama:", hash_lama), file = log_path, append = TRUE)
     }
-  )
+
+    # Enkripsi (tetap dilakukan walau tidak berubah)
+    isi_encrypted_raw <- encrypt_file(isi_file, kunci_aes)
+    isi_encrypted_b64 <- base64_encode(isi_encrypted_raw)
+
+    # Simpan hash dan hasil enkripsi
+    writeLines(isi_hash, hash_path)
+    writeLines(isi_encrypted_b64, enc_path, useBytes = TRUE)
+
+    # Dekripsi untuk validasi
+    isi_decrypted_raw <- decrypt_file(base64_decode(isi_encrypted_b64), kunci_aes)
+    isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
+    jsonlite::fromJSON(isi_asli)  # Validasi ulang JSON
+    writeLines(isi_asli, restore_path, useBytes = TRUE)
+
+    # Logging
+    write(paste(timestamp, "- JSON berhasil dipulihkan & dienkripsi."), file = log_path, append = TRUE)
+    write(paste(timestamp, "- HASH baru:", isi_hash), file = log_path, append = TRUE)
+    write(paste(timestamp, "- HASH base64 terenkripsi:", digest(isi_encrypted_b64, algo = "sha256")), file = log_path, append = TRUE)
+
+    # Telegram
+    kirim_telegram(paste0("⚠️ *PERINGATAN*\nFile `", basename(file_path), "` *dienkripsi ulang* & dipulihkan ke: `", basename(restore_path), "`\n🕒 ", timestamp))
+    message("✅ JSON berhasil dienkripsi dan dipulihkan.")
+  }, error = function(e) {
+    message("❌ ERROR (Enkripsi): ", e$message)
+  })
 }
 
 # === MODE DEKRIPSI ===
 if (mode == "dekripsi") {
-  tryCatch(
-    {
-      if (!file.exists(enc_path)) stop("❌ File terenkripsi tidak ditemukan.")
+  tryCatch({
+    if (!file.exists(enc_path)) stop("❌ File terenkripsi tidak ditemukan.")
+    isi_encrypted_b64 <- readLines(enc_path, warn = FALSE)
+    if (length(isi_encrypted_b64) == 0) stop("⚠️ File terenkripsi kosong.")
 
-      isi_encrypted_b64 <- readLines(enc_path, warn = FALSE)
-      if (length(isi_encrypted_b64) == 0) stop("⚠️ File terenkripsi kosong.")
+    isi_encrypted_raw <- base64_decode(paste(isi_encrypted_b64, collapse = ""))
+    isi_decrypted_raw <- decrypt_file(isi_encrypted_raw, kunci_aes)
+    isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
 
-      isi_encrypted_raw <- base64_decode(paste(isi_encrypted_b64, collapse = ""))
-      isi_decrypted_raw <- decrypt_file(isi_encrypted_raw, kunci_aes)
+    jsonlite::fromJSON(isi_asli)  # validasi JSON
+    writeLines(isi_asli, restore_path, useBytes = TRUE)
 
-      isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
-      writeLines(isi_asli, restore_path, useBytes = TRUE)
-
-      message("✅ File berhasil didekripsi ke: ", restore_path)
-      kirim_telegram(paste0("🔓 File dipulihkan ke: ", basename(restore_path), " [", timestamp, "]"))
-    },
-    error = function(e) {
-      message("❌ ERROR (Dekripsi): ", e$message)
-    }
-  )
+    write(paste(timestamp, "- DEKRIPSI berhasil & file dipulihkan."), file = log_path, append = TRUE)
+    kirim_telegram(paste0("🔓 JSON berhasil *didekripsi* ke: `", basename(restore_path), "`\n🕒 ", timestamp))
+    message("✅ File JSON berhasil didekripsi ke: ", restore_path)
+  }, error = function(e) {
+    message("❌ ERROR (Dekripsi): ", e$message)
+  })
 }
+
+# Akhiri program
+readline(prompt = "⏹ Tekan [Enter] untuk keluar...")

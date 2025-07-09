@@ -60,3 +60,63 @@
 2025-07-09 00:56:31 - PERUBAHAN TERDETEKSI & DIPULIHKAN
 2025-07-09 00:56:36 - Tidak ada perubahan
 2025-07-09 00:56:47 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-09 01:22:47 - Tidak ada perubahan
+2025-07-09 01:23:42 - Tidak ada perubahan
+2025-07-09 01:24:42 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-09 01:24:53 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-09 01:24:57 - Tidak ada perubahan
+2025-07-09 01:26:51 - Tidak ada perubahan
+2025-07-09 01:27:08 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-09 01:27:08 - Tidak ada perubahan
+2025-07-09 01:29:11 - Tidak ada perubahan
+2025-07-09 01:55:47 - Tidak ada perubahan
+2025-07-09 01:56:08 - Tidak ada perubahan
+2025-07-09 01:58:29 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-09 01:58:47 - Tidak ada perubahan
+2025-07-09 01:59:14 - PERUBAHAN TERDETEKSI & DIPULIHKAN
+2025-07-10 01:11:49 - JSON BERUBAH & DIPULIHKAN
+2025-07-10 01:14:17 - Tidak ada perubahan
+2025-07-10 01:14:28 - JSON BERUBAH & DIPULIHKAN
+2025-07-10 01:14:58 - JSON BERUBAH & DIPULIHKAN
+2025-07-10 01:15:08 - Tidak ada perubahan
+2025-07-10 01:15:21 - Tidak ada perubahan
+2025-07-10 01:21:11 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:21:36 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:26:11 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:26:21 - HASH lama: 63ec9dd389416ccf5fff265b5589ead77a59cc12f28e81d814e5ce933fe147de
+2025-07-10 01:26:21 - JSON dipulihkan & dienkripsi ulang
+2025-07-10 01:26:21 - HASH baru: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 01:26:21 - HASH hasil base64 terenkripsi: ee0f2e63f3f032e583a512632e5b9530b625254c7876aef38f529a73558d02a6
+2025-07-10 01:26:32 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:26:39 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:28:57 - HASH lama: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 01:28:57 - JSON dipulihkan & dienkripsi ulang
+2025-07-10 01:28:57 - HASH baru: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 01:28:57 - HASH hasil base64 terenkripsi: 8282d7c2a893e197cd7588aa7a3b8b1919fb6a8486e57c7e2f8273bff64ef24a
+2025-07-10 01:29:05 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:29:46 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:30:18 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:30:29 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:31:37 - DEKRIPSI berhasil & file dipulihkan
+2025-07-10 01:33:31 - HASH lama: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 01:33:31 - JSON dipulihkan & dienkripsi ulang
+2025-07-10 01:33:31 - HASH baru: b1e568363983af2521ccbaea88263718e388b93c9bedd7310b602573375a4050
+2025-07-10 01:33:31 - HASH hasil base64 terenkripsi: 37cfb9e1412f0c9bbf2113bfec6b1630734b5a5c126fd87f0e9add67a05e94fb
+2025-07-10 01:37:58 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 01:42:04 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 01:42:26 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 01:44:54 - HASH lama: b1e568363983af2521ccbaea88263718e388b93c9bedd7310b602573375a4050
+2025-07-10 01:44:54 - JSON berhasil dipulihkan & dienkripsi.
+2025-07-10 01:44:54 - HASH baru: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 01:44:54 - HASH base64 terenkripsi: 456eabfd48b058d7dc5e2486052c00368b6f3028786c93fa25e6ef5754cc7728
+2025-07-10 01:46:39 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 03:10:20 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 03:10:56 - HASH lama: 0a408727716f3f3b41abd7e420735c5ba7076f11ef1878efde368397b112a8dc
+2025-07-10 03:10:56 - JSON berhasil dipulihkan & dienkripsi.
+2025-07-10 03:10:56 - HASH baru: 9fef92a05eb3cdeb2fce0788dccaf33a175933227b0a7d36bf41b143166f1e33
+2025-07-10 03:10:56 - HASH base64 terenkripsi: 6ac7d1f720c26e5f48f768836459b0836fb405ec0fdffd16d09bb8a65a57280d
+2025-07-10 03:11:04 - DEKRIPSI berhasil & file dipulihkan.
+2025-07-10 03:11:30 - HASH lama: 9fef92a05eb3cdeb2fce0788dccaf33a175933227b0a7d36bf41b143166f1e33
+2025-07-10 03:11:30 - JSON berhasil dipulihkan & dienkripsi.
+2025-07-10 03:11:30 - HASH baru: 2dcc4df4599db641fb9e9e710ff7bdaa21332a8e682c61646fe13fb4c576afca
+2025-07-10 03:11:30 - HASH base64 terenkripsi: d450bca4602446bf92bec703f41a18d21bc32001820673dfffa3107bb7c3db75
