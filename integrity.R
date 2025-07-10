@@ -1,126 +1,136 @@
 # === PAKET YANG DIGUNAKAN ===
-library(httr)
-library(openssl)
-library(base64enc)
-library(digest)
-library(jsonlite)
+library(httr)         # Untuk komunikasi HTTP (mengirim pesan ke Telegram)
+library(base64enc)    # Untuk encoding dan decoding base64
+library(digest)       # Untuk menghitung hash SHA256
+library(jsonlite)     # Untuk validasi dan parsing JSON
 
 # === KONFIGURASI ===
-mode <- "auto"  # bisa: "enkripsi", "dekripsi", atau "auto"
+mode <- "enkripsi"  # Mode utama program: "enkripsi", "dekripsi", atau "auto"
 
-file_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/dummy.json"
-enc_path      <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_encrypted.txt"
-hash_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/last_hash.txt"
-log_path      <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/log.txt"
-restore_path  <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChekcker/recovered_dummy.json"
+# Path file yang digunakan
+file_path    <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChecker/dummy.json"        # File JSON asli
+enc_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChecker/last_encrypted.txt" # File hasil enkripsi base64
+hash_path    <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChecker/last_hash.txt"      # File untuk menyimpan hash terakhir
+log_path     <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChecker/log.txt"            # File log proses
+restore_path <- "C:/Users/DAFFA PRASETIO/Documents/IntegrityChecker/recovered_dummy.json" # File hasil dekripsi
 
-telegram_token <- "7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI"
-chat_id <- "-4973331538"
-timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+# Konfigurasi Telegram
+telegram_token <- "7435310919:AAG4YW44IIq3UeGJGdtoeK1LUeGzJZ9BQyI"  # Token bot Telegram
+chat_id <- "-4973331538"                                            # ID chat tujuan
+timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")                # Waktu saat ini
 
-# === KUNCI AES (HARUS 16 BYTE) ===
-kunci_aes <- charToRaw("1234567890ABCDEF")
+# === KUNCI 3DES (HARUS 24 BYTE) ===
+kunci_3des <- charToRaw("1234567890ABCDEFGHIJKLMNOP")  # Konversi string menjadi raw vector untuk kunci 3DES
 
-# === FUNGSI TELEGRAM ===
+# === FUNGSI UNTUK MENGIRIM PESAN TELEGRAM ===
 kirim_telegram <- function(pesan) {
-  url <- paste0("https://api.telegram.org/bot", telegram_token, "/sendMessage")
-  POST(url, body = list(chat_id = chat_id, text = pesan, parse_mode = "Markdown"))
+  url <- paste0("https://api.telegram.org/bot", telegram_token, "/sendMessage")  # URL API Telegram
+  POST(url, body = list(chat_id = chat_id, text = pesan, parse_mode = "Markdown"))  # Kirim POST request
 }
 
-# === ENKRIPSI / DEKRIPSI AES-GCM ===
-encrypt_file <- function(teks, key_raw) {
-  iv <- rand_bytes(12)  # IV acak
-  cipher <- aes_gcm_encrypt(charToRaw(teks), key = key_raw, iv = iv)
-  c(iv, cipher)
+# === FUNGSI ENKRIPSI DENGAN OPENSSL (3DES-CBC) ===
+encrypt_file <- function(input_text, key_raw, tmp_plain = "plain.txt", tmp_enc = "encrypted.bin") {
+  writeLines(input_text, tmp_plain, useBytes = TRUE)  # Tulis isi file ke file sementara
+  iv <- as.raw(sample(0:255, 8, replace = TRUE))      # Buat IV acak 8 byte
+  key_hex <- paste(sprintf("%02X", as.integer(key_raw)), collapse = "")  # Ubah key menjadi string hex
+  iv_hex  <- paste(sprintf("%02X", as.integer(iv)), collapse = "")       # Ubah IV menjadi string hex
+  cmd <- paste0("openssl enc -des-ede3-cbc -K ", key_hex, " -iv ", iv_hex,
+                " -in ", shQuote(tmp_plain), " -out ", shQuote(tmp_enc), " -nosalt")  # Perintah OpenSSL
+  status <- system(cmd, intern = FALSE)             # Jalankan perintah
+  if (status != 0) stop("Gagal mengenkripsi via OpenSSL.")  # Jika gagal, hentikan program
+  cipher <- readBin(tmp_enc, what = "raw", n = file.info(tmp_enc)$size)  # Baca hasil enkripsi
+  c(iv, cipher)  # Gabungkan IV dan cipher sebagai output
 }
 
-decrypt_file <- function(full_raw, key_raw) {
-  if (length(full_raw) <= 12) stop("Ciphertext tidak valid.")
-  iv <- full_raw[1:12]
-  cipher <- full_raw[-(1:12)]
-  aes_gcm_decrypt(cipher, key = key_raw, iv = iv)
+# === FUNGSI DEKRIPSI DENGAN OPENSSL (3DES-CBC) ===
+decrypt_file <- function(full_raw, key_raw, tmp_dec = "decrypted.txt", tmp_enc = "encrypted.bin") {
+  if (length(full_raw) <= 8) stop("Ciphertext tidak valid.")  # Minimal panjang ciphertext adalah 8 byte (IV)
+  iv     <- full_raw[1:8]             # Ambil IV
+  cipher <- full_raw[-(1:8)]          # Ambil isi cipher
+  writeBin(cipher, tmp_enc)           # Tulis cipher ke file sementara
+  key_hex <- paste(sprintf("%02X", as.integer(key_raw)), collapse = "")  # Key dalam hex
+  iv_hex  <- paste(sprintf("%02X", as.integer(iv)), collapse = "")       # IV dalam hex
+  cmd <- paste0("openssl enc -d -des-ede3-cbc -K ", key_hex, " -iv ", iv_hex,
+                " -in ", shQuote(tmp_enc), " -out ", shQuote(tmp_dec), " -nosalt")  # Perintah dekripsi
+  status <- system(cmd, intern = FALSE)
+  if (status != 0) stop("Gagal mendekripsi via OpenSSL.")
+  paste(readLines(tmp_dec, warn = FALSE), collapse = "\n")  # Kembalikan isi dekripsi
 }
 
-# === MODE OTOMATIS ===
+# === MODE OTOMATIS UNTUK MEMILIH ENKRIPSI / DEKRIPSI ===
 if (mode == "auto") {
-  if (!file.exists(file_path)) stop("❌ File JSON tidak ditemukan.")
-
+  if (!file.exists(file_path)) stop("❌ File JSON tidak ditemukan.")  # Validasi file
   isi_file <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-  hash_sekarang <- digest(isi_file, algo = "sha256")
+  hash_sekarang <- digest(isi_file, algo = "sha256")  # Hitung hash saat ini
 
   if (!file.exists(hash_path)) {
-    mode <- "enkripsi"
+    mode <- "enkripsi"  # Jika hash sebelumnya tidak ada, lakukan enkripsi
   } else {
     hash_lama <- readLines(hash_path, warn = FALSE)
-    mode <- if (!identical(hash_sekarang, hash_lama)) "enkripsi" else "dekripsi"
+    mode <- if (!identical(hash_sekarang, hash_lama)) "enkripsi" else "dekripsi"  # Bandingkan hash
   }
-
-  message("🔁 Mode otomatis memilih: ", toupper(mode))
+  message("🔁 Mode otomatis memilih: ", toupper(mode))  # Info mode yang dipilih
 }
 
-# === MODE ENKRIPSI ===
+# === PROSES ENKRIPSI ===
 if (mode == "enkripsi") {
   tryCatch({
     if (!file.exists(file_path)) stop("❌ File JSON tidak ditemukan.")
-
     isi_file <- paste(readLines(file_path, warn = FALSE), collapse = "\n")
-    jsonlite::fromJSON(isi_file)  # Validasi awal JSON
-    isi_hash <- digest(isi_file, algo = "sha256")
+    jsonlite::fromJSON(isi_file)  # Validasi format JSON
+    isi_hash <- digest(isi_file, algo = "sha256")  # Hash isi file
 
-    # Log hash lama jika ada
     if (file.exists(hash_path)) {
       hash_lama <- readLines(hash_path, warn = FALSE)
       write(paste(timestamp, "- HASH lama:", hash_lama), file = log_path, append = TRUE)
     }
 
-    # Enkripsi (tetap dilakukan walau tidak berubah)
-    isi_encrypted_raw <- encrypt_file(isi_file, kunci_aes)
-    isi_encrypted_b64 <- base64_encode(isi_encrypted_raw)
+    isi_encrypted_raw <- encrypt_file(isi_file, kunci_3des)           # Enkripsi file
+    isi_encrypted_b64 <- base64enc::base64encode(isi_encrypted_raw)  # Encode base64 hasil enkripsi
 
-    # Simpan hash dan hasil enkripsi
-    writeLines(isi_hash, hash_path)
-    writeLines(isi_encrypted_b64, enc_path, useBytes = TRUE)
+    writeLines(isi_hash, hash_path)                                   # Simpan hash baru
+    writeLines(isi_encrypted_b64, enc_path, useBytes = TRUE)          # Simpan file terenkripsi
 
-    # Dekripsi untuk validasi
-    isi_decrypted_raw <- decrypt_file(base64_decode(isi_encrypted_b64), kunci_aes)
-    isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
-    jsonlite::fromJSON(isi_asli)  # Validasi ulang JSON
-    writeLines(isi_asli, restore_path, useBytes = TRUE)
+    # Validasi hasil dekripsi
+    isi_decrypted_raw <- decrypt_file(base64enc::base64decode(isi_encrypted_b64), kunci_3des)
+    jsonlite::fromJSON(isi_decrypted_raw)                             # Pastikan bisa dibaca sebagai JSON
+    writeLines(isi_decrypted_raw, restore_path, useBytes = TRUE)      # Simpan hasil dekripsi
 
-    # Logging
+    # Log ke file
     write(paste(timestamp, "- JSON berhasil dipulihkan & dienkripsi."), file = log_path, append = TRUE)
     write(paste(timestamp, "- HASH baru:", isi_hash), file = log_path, append = TRUE)
     write(paste(timestamp, "- HASH base64 terenkripsi:", digest(isi_encrypted_b64, algo = "sha256")), file = log_path, append = TRUE)
 
-    # Telegram
-    kirim_telegram(paste0("⚠️ *PERINGATAN*\nFile `", basename(file_path), "` *dienkripsi ulang* & dipulihkan ke: `", basename(restore_path), "`\n🕒 ", timestamp))
+    # Kirim notifikasi ke Telegram
+    kirim_telegram(paste0("⚠️ *PERINGATAN*\nFile `", basename(file_path), "` *dienkripsi ulang* dan dipulihkan ke `", basename(restore_path), "`\n🕒 ", timestamp))
     message("✅ JSON berhasil dienkripsi dan dipulihkan.")
   }, error = function(e) {
-    message("❌ ERROR (Enkripsi): ", e$message)
+    message("❌ ERROR (Enkripsi): ", e$message)  # Tangani error saat enkripsi
   })
 }
 
-# === MODE DEKRIPSI ===
+# === PROSES DEKRIPSI ===
 if (mode == "dekripsi") {
   tryCatch({
-    if (!file.exists(enc_path)) stop("❌ File terenkripsi tidak ditemukan.")
-    isi_encrypted_b64 <- readLines(enc_path, warn = FALSE)
+    if (!file.exists(enc_path)) stop("❌ File terenkripsi tidak ditemukan.")  # Validasi keberadaan file terenkripsi
+    isi_encrypted_b64 <- readLines(enc_path, warn = FALSE)                   # Baca isi terenkripsi
     if (length(isi_encrypted_b64) == 0) stop("⚠️ File terenkripsi kosong.")
 
-    isi_encrypted_raw <- base64_decode(paste(isi_encrypted_b64, collapse = ""))
-    isi_decrypted_raw <- decrypt_file(isi_encrypted_raw, kunci_aes)
-    isi_asli <- paste(rawToChar(isi_decrypted_raw, multiple = TRUE), collapse = "")
+    isi_encrypted_raw <- base64enc::base64decode(paste(isi_encrypted_b64, collapse = ""))  # Decode base64
+    isi_asli <- decrypt_file(isi_encrypted_raw, kunci_3des)                                # Dekripsi
+    jsonlite::fromJSON(isi_asli)                                                           # Validasi JSON
 
-    jsonlite::fromJSON(isi_asli)  # validasi JSON
-    writeLines(isi_asli, restore_path, useBytes = TRUE)
-
+    writeLines(isi_asli, restore_path, useBytes = TRUE)         # Simpan hasil dekripsi
     write(paste(timestamp, "- DEKRIPSI berhasil & file dipulihkan."), file = log_path, append = TRUE)
-    kirim_telegram(paste0("🔓 JSON berhasil *didekripsi* ke: `", basename(restore_path), "`\n🕒 ", timestamp))
+    kirim_telegram(paste0("🔓 JSON berhasil *didekripsi* ke `", basename(restore_path), "`\n🕒 ", timestamp))
     message("✅ File JSON berhasil didekripsi ke: ", restore_path)
   }, error = function(e) {
-    message("❌ ERROR (Dekripsi): ", e$message)
+    message("❌ ERROR (Dekripsi): ", e$message)  # Tangani error dekripsi
   })
 }
 
-# Akhiri program
+# === HAPUS FILE SEMENTARA (BERSIH-BERSIH) ===
+file.remove("plain.txt", "decrypted.txt", "cipher.bin", "encrypted.bin", "decryp.bin")
+
+# === SELESAI ===
 readline(prompt = "⏹ Tekan [Enter] untuk keluar...")
